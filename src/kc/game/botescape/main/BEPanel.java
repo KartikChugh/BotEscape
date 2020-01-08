@@ -1,7 +1,7 @@
 package kc.game.botescape.main;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -11,7 +11,7 @@ import kc.game.botescape.entities.Tank;
 
 public final class BEPanel extends JPanel {
 	
-	private static final int TPS_DESIRED = 100;
+	private static final int TPS_DESIRED = 200;
     private static int WIDTH;
     private static int HEIGHT;
     
@@ -24,9 +24,11 @@ public final class BEPanel extends JPanel {
     public BEPanel() {
     	setBackground(Color.BLACK);
     	setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
-    	
+    	addKeyListener(new aKeyListener());
+    	setFocusable(true);
+
     	 timer = new Timer(1000/TPS_DESIRED, this::tick);
-    	 tank = new Tank(0, 0);
+    	 tank = new Tank();
     	 bots = new Bots();
     }
     
@@ -37,6 +39,7 @@ public final class BEPanel extends JPanel {
 		final Dimension size = getSize();
 		WIDTH = size.width;
 		HEIGHT = size.height;
+		tank.setPosStart(WIDTH / 2, HEIGHT / 2);
 	}
 	
 	public void start() {
@@ -56,7 +59,62 @@ public final class BEPanel extends JPanel {
 	@Override
     protected void paintComponent(final Graphics g) {
         super.paintComponent(g);
+        final Graphics2D g2d = (Graphics2D) g;
         
+        tank.draw(g2d);
     }
+	
+	private class aKeyListener extends KeyAdapter {
+		
+		@Override
+		public void keyPressed(KeyEvent e) {
+			
+			switch(e.getKeyCode()) {
+			
+			case KeyEvent.VK_RIGHT:
+				tank.directRight();
+				break;
+				
+			case KeyEvent.VK_LEFT:
+				tank.directLeft();
+				break;
+				
+			case KeyEvent.VK_UP:
+				tank.directUp();
+				break;
+				
+			case KeyEvent.VK_DOWN:
+				tank.directDown();
+				break;
+			
+			}
+			
+		}
+		
+		@Override
+		public void keyReleased(KeyEvent e) {
+			
+			switch(e.getKeyCode()) {
+			
+			case KeyEvent.VK_RIGHT:
+				tank.directStop(true);
+				break;
+				
+			case KeyEvent.VK_LEFT:
+				tank.directStop(true);
+				break;
+				
+			case KeyEvent.VK_UP:
+				tank.directStop(false);
+				break;
+				
+			case KeyEvent.VK_DOWN:
+				tank.directStop(false);
+				break;
+			
+			}
+		}
+		
+	}
 	
 }
